@@ -5,7 +5,6 @@ import nl.craftsmen.microprofile.standalone.ergast.ErgastClient;
 import nl.craftsmen.microprofile.standalone.ergast.RaceResult;
 import nl.craftsmen.microprofile.standalone.mdc.MdcLogContext;
 import org.eclipse.microprofile.context.ManagedExecutor;
-import org.eclipse.microprofile.context.ThreadContext;
 import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Query;
@@ -21,7 +20,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -55,12 +53,12 @@ public class DriversPerRaceController {
             logger.info("Retrieving race");
             return ergastClient.raceResultsAsync();
         }).thenApplyAsync(result -> {
-                    MDC.setContextMap(mdcLogContext.getContext());
-                    logger.info("retrieving drivers from race");
-                    return result.thenApplyAsync(result1 -> result1.getMrData().getRaceTable().getRaces().stream()
-                            .flatMap(race -> race.getResults().stream()).map(RaceResult::getDriver)
-                            .collect(Collectors.toList()));
-                }).get();
+            MDC.setContextMap(mdcLogContext.getContext());
+            logger.info("retrieving drivers from race");
+            return result.thenApplyAsync(result1 -> result1.getMrData().getRaceTable().getRaces().stream()
+                    .flatMap(race -> race.getResults().stream()).map(RaceResult::getDriver)
+                    .collect(Collectors.toList()));
+        }).get();
     }
 
     @Mutation
